@@ -17,12 +17,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button b;
     private TextView t;
     private LocationManager locationManager;
     private LocationListener listener;
+
+    GoogleMap mMap;
+    Marker mMarker;
+    double lat, lng;
 
 
     @Override
@@ -40,7 +52,22 @@ public class MainActivity extends AppCompatActivity {
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                LatLng coordinate = new LatLng(location.getLatitude(), location.getLongitude());
                 t.setText("\n " + location.getLongitude() + " " + location.getLatitude());
+                if (mMarker != null) {
+                    mMarker.remove();
+                }
+               /* MarkerOptions options=new MarkerOptions()
+                        .title("ตำแน่งปัจจุบันของ : ")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .position(new LatLng(lat, lng))
+                        .snippet("hjhgugi");
+
+                mMarker = mMap.addMarker(options);*/
+                mMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 16));
+
+
             }
 
             @Override
@@ -62,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         configure_button();
+        mMap = ((SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map)).getMap();
     }
 
     @Override
